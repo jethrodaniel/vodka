@@ -3,5 +3,8 @@ name = "vodka"
 version = "0.1.0"
 authors = ["Mark Delk <jethrodaniel@gmail.com>"]
 edition = "2018"
+description = 'Does nothing (for now). Just dips on this name'
+readme = 'README.md'
+license = 'MIT'
 
 [dependencies]
