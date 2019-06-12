@@ -8,3 +8,5 @@ readme = 'README.md'
 license = 'MIT'
 
 [dependencies]
+# https://github.com/erlepereira/x11-rs/issues/94
+x11 = { version = "2.18.1", features = ["xlib"] }
