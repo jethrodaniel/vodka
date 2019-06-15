@@ -1,5 +1,7 @@
 use std::env;
 use std::ptr;
+use std::thread;
+use std::time;
 
 use x11::xlib::{XCloseDisplay, XOpenDisplay, XScreenCount, XScreenOfDisplay, XSync};
 
@@ -70,6 +72,28 @@ impl Display {
             display_env_var,
         })
     }
+
+    pub unsafe fn start(&mut self) {
+      trace!("Starting input loop");
+      loop {
+        trace!("Sleeping 5 seconds");
+        thread::sleep(time::Duration::from_millis(5_000));
+      }
+    }
+
+    // pub unsafe fn setup_xrandr(&mut self) {
+    //     // If xrandr is enabled, ask to receive events for screen configuration
+    //     // changes
+    //     let mut xrandr_event_base = 0;
+    //     let mut xrandr_error_base = 0;
+    //     let xrandr =
+    //         x11::xrandr::XRRQueryExtension(self.display, &xrandr_event_base, &xrandr_error_base);
+    //     let xrandr = x11::xrandr::XRRSelectInput(
+    //         self.display,
+    //         x11::xlib::XDefaultRootWindow(self.display),
+    //         x11::xrandr::RRScreenChangeNotifyMask,
+    //     );
+    // }
 }
 
 impl Drop for Display {
@@ -82,9 +106,12 @@ impl Drop for Display {
 }
 
 pub unsafe fn run(matches: clap::ArgMatches) -> Result<String, String> {
-    if let Err(e) = Display::new() {
-        return Err(e);
-    }
+    let mut display = match Display::new() {
+        Ok(display) => display,
+        Err(e) => { return Err(e); }
+    };
+
+    display.start();
 
     Ok("Sucess, much wow.".to_string())
 }
