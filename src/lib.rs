@@ -1,7 +1,13 @@
 use std::env;
 use std::ptr;
 
-use x11::xlib::{XCloseDisplay, XOpenDisplay, XScreenCount, XScreenOfDisplay};
+use x11::xlib::{
+  XCloseDisplay,
+  XOpenDisplay,
+  XScreenCount,
+  XScreenOfDisplay,
+  XSync,
+};
 
 struct Resolution {
     x: i32,
@@ -20,6 +26,7 @@ pub struct Display {
 }
 
 impl Display {
+    // Create a new display
     pub unsafe fn new() -> Result<Display, String> {
         let display_env_var = match env::var("DISPLAY") {
             Ok(value) => value,
@@ -32,30 +39,35 @@ impl Display {
             return Err("XOpenDisplay failed".to_string());
         };
 
-        // Return the number of available screens
         let count_screens = XScreenCount(display);
-
-        let mut screens = Vec::new();
 
         println!("Number of screens: {}", count_screens);
 
-        for i in 0..count_screens {
-            let screen = *XScreenOfDisplay(display, i);
+        let screens: Vec<Screen> = (0..count_screens)
+            .map(|i| {
+                let screen = *XScreenOfDisplay(display, i);
 
-            println!("\tScreen {}: {}x{}", i + 1, screen.width, screen.height);
+                println!("\tScreen {}: {}x{}", i + 1, screen.width, screen.height);
 
-            screens.push(Screen {
-                resolution: Resolution {
-                    x: screen.width,
-                    y: screen.height,
-                },
-            });
-        }
+                Screen {
+                    resolution: Resolution {
+                        x: screen.width,
+                        y: screen.height,
+                    },
+                }
+            })
+            .collect();
+
+
+        // Sync with the X server.
+        // This ensure we errors about XGrabKey and other failures
+        // before we try to daemonize
+        XSync(display, 0);
 
         Ok(Display {
-            display: display,
-            screens: Vec::new(),
-            display_env_var: display_env_var,
+            display,
+            screens,
+            display_env_var,
         })
     }
 }
