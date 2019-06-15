@@ -8,5 +8,14 @@ readme = 'README.md'
 license = 'MIT'
 
 [dependencies]
+
+# To use the X11 system
+#
 # https://github.com/erlepereira/x11-rs/issues/94
 x11 = { version = "2.18.1", features = ["xlib"] }
+
+# Command line argument parser for Rust
+clap = "2.33.0"
+
+# For testing cli apps
+assert_cmd = "0.11"
