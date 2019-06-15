@@ -1,13 +1,10 @@
 use std::env;
 use std::ptr;
 
-use x11::xlib::{
-  XCloseDisplay,
-  XOpenDisplay,
-  XScreenCount,
-  XScreenOfDisplay,
-  XSync,
-};
+use x11::xlib::{XCloseDisplay, XOpenDisplay, XScreenCount, XScreenOfDisplay, XSync};
+
+#[macro_use]
+extern crate log;
 
 struct Resolution {
     x: i32,
@@ -28,11 +25,15 @@ pub struct Display {
 impl Display {
     // Create a new display
     pub unsafe fn new() -> Result<Display, String> {
+        trace!("Creating new display instance");
+
+        trace!("Checking for DISPLAY");
         let display_env_var = match env::var("DISPLAY") {
             Ok(value) => value,
             Err(_) => return Err(format!("$DISPLAY must be set! Aborting...")),
         };
 
+        trace!("Connecting to the X server");
         let display = XOpenDisplay(ptr::null());
 
         if display.is_null() {
@@ -41,13 +42,13 @@ impl Display {
 
         let count_screens = XScreenCount(display);
 
-        println!("Number of screens: {}", count_screens);
+        info!("Number of screens: {}", count_screens);
 
         let screens: Vec<Screen> = (0..count_screens)
             .map(|i| {
                 let screen = *XScreenOfDisplay(display, i);
 
-                println!("\tScreen {}: {}x{}", i + 1, screen.width, screen.height);
+                info!("\tScreen {}: {}x{}", i + 1, screen.width, screen.height);
 
                 Screen {
                     resolution: Resolution {
@@ -58,8 +59,7 @@ impl Display {
             })
             .collect();
 
-
-        // Sync with the X server.
+        trace!("Syncing with X server");
         // This ensure we errors about XGrabKey and other failures
         // before we try to daemonize
         XSync(display, 0);
@@ -75,6 +75,7 @@ impl Display {
 impl Drop for Display {
     fn drop(&mut self) {
         unsafe {
+            trace!("Closing X display");
             XCloseDisplay(self.display);
         }
     }

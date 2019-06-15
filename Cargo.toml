@@ -9,6 +9,10 @@ license = 'MIT'
 
 [dependencies]
 
+# Logging
+log = "0.4.6"
+simplelog = "0.5.3"
+
 # To use the X11 system
 #
 # https://github.com/erlepereira/x11-rs/issues/94
