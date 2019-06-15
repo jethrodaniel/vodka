@@ -1,4 +1,5 @@
 use assert_cmd::prelude::*;
+use std::env;
 use std::process::Command;
 
 #[test]
@@ -34,7 +35,6 @@ fn get_display_env_var() {
 #[test]
 #[should_panic]
 fn get_missing_display_env_var() {
-    use std::env;
     env::set_var("DISPLAY", "");
     get_display_env_var();
 }

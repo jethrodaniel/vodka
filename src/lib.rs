@@ -1,9 +1,7 @@
 use std::env;
-
 use std::ptr;
-use x11::xlib::{XCloseDisplay, XOpenDisplay, XScreenCount, XScreenOfDisplay};
 
-use clap::ArgMatches;
+use x11::xlib::{XCloseDisplay, XOpenDisplay, XScreenCount, XScreenOfDisplay};
 
 struct Resolution {
     x: i32,
@@ -34,31 +32,6 @@ impl Display {
             return Err("XOpenDisplay failed".to_string());
         };
 
-        Ok(Display {
-            display: display,
-            screens: Vec::new(),
-            display_env_var: display_env_var,
-        })
-    }
-}
-
-pub unsafe fn run(matches: ArgMatches) -> Result<String, String> {
-    if let Err(e) = Display::new() {
-        return Err(e);
-    }
-
-    if let Err(e) = resolution() {
-        return Err(e);
-    }
-
-    Ok("Wow".to_string())
-}
-
-pub fn resolution() -> Result<Vec<Screen>, String> {
-    unsafe {
-        // Open a display. This will fail if $DISPLAY isn't valid
-        let display = XOpenDisplay(ptr::null());
-
         // Return the number of available screens
         let count_screens = XScreenCount(display);
 
@@ -71,18 +44,34 @@ pub fn resolution() -> Result<Vec<Screen>, String> {
 
             println!("\tScreen {}: {}x{}", i + 1, screen.width, screen.height);
 
-            let screen = Screen {
+            screens.push(Screen {
                 resolution: Resolution {
                     x: screen.width,
                     y: screen.height,
                 },
-            };
-            screens.push(screen);
+            });
         }
 
-        // close the display
-        XCloseDisplay(display);
-
-        return Ok(screens);
+        Ok(Display {
+            display: display,
+            screens: Vec::new(),
+            display_env_var: display_env_var,
+        })
     }
+}
+
+impl Drop for Display {
+    fn drop(&mut self) {
+        unsafe {
+            XCloseDisplay(self.display);
+        }
+    }
+}
+
+pub unsafe fn run(matches: clap::ArgMatches) -> Result<String, String> {
+    if let Err(e) = Display::new() {
+        return Err(e);
+    }
+
+    Ok("Sucess, much wow.".to_string())
 }
