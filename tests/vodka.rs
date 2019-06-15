@@ -1,5 +1,3 @@
-use clap::{App, Arg};
-
 use assert_cmd::prelude::*;
 use std::process::Command;
 
@@ -19,4 +17,24 @@ fn display_init() {
             Err(msg) => panic!(msg),
         };
     }
+}
+
+#[test]
+fn get_display_env_var() {
+    unsafe {
+        match vodka::Display::new() {
+            Ok(display) => {
+                assert_eq!(display.display_env_var, ":0");
+            }
+            Err(msg) => panic!(msg),
+        };
+    }
+}
+
+#[test]
+#[should_panic]
+fn get_missing_display_env_var() {
+    use std::env;
+    env::set_var("DISPLAY", "");
+    get_display_env_var();
 }

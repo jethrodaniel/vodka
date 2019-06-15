@@ -18,11 +18,16 @@ pub struct Screen {
 pub struct Display {
     pub screens: Vec<Screen>,
     pub display: *mut x11::xlib::Display,
+    pub display_env_var: String,
 }
 
 impl Display {
     pub unsafe fn new() -> Result<Display, String> {
-        // Open a display. This will fail if $DISPLAY isn't valid
+        let display_env_var = match env::var("DISPLAY") {
+            Ok(value) => value,
+            Err(_) => return Err(format!("$DISPLAY must be set! Aborting...")),
+        };
+
         let display = XOpenDisplay(ptr::null());
 
         if display.is_null() {
@@ -32,12 +37,13 @@ impl Display {
         Ok(Display {
             display: display,
             screens: Vec::new(),
+            display_env_var: display_env_var,
         })
     }
 }
 
-pub fn run(matches: ArgMatches) -> Result<String, String> {
-    if let Err(e) = display() {
+pub unsafe fn run(matches: ArgMatches) -> Result<String, String> {
+    if let Err(e) = Display::new() {
         return Err(e);
     }
 
@@ -46,31 +52,6 @@ pub fn run(matches: ArgMatches) -> Result<String, String> {
     }
 
     Ok("Wow".to_string())
-}
-
-/// Checks for the $DISPLAY env variable, which is required by X11
-///
-/// ```
-/// use std::env;
-///
-/// env::set_var("DISPLAY", ":0");
-/// assert_eq!(vodka::display().unwrap(), ":0");
-/// ```
-///
-/// ```should_panic
-/// use std::env;
-///
-/// env::set_var("DISPLAY", "");
-/// assert_eq!(vodka::display().unwrap(), ":0");
-/// ```
-pub fn display() -> Result<String, String> {
-    match env::var("DISPLAY") {
-        Ok(value) => {
-            println!("DISPLAY: {:?}", value);
-            Ok(value)
-        }
-        Err(_) => Err(format!("$DISPLAY must be set! Aborting...")),
-    }
 }
 
 pub fn resolution() -> Result<Vec<Screen>, String> {

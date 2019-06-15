@@ -16,11 +16,13 @@ fn main() {
         )
         .get_matches();
 
-    match vodka::run(matches) {
-        Ok(_) => (),
-        Err(e) => {
-            println!("Application error: {}", e);
-            std::process::exit(1)
+    unsafe {
+        match vodka::run(matches) {
+            Ok(_) => (),
+            Err(e) => {
+                println!("Application error: {}", e);
+                std::process::exit(1)
+            }
         }
     }
 }
