@@ -5,19 +5,21 @@ use std::ptr;
 use x11::xlib::{XCloseDisplay, XOpenDisplay, XScreenCount, XScreenOfDisplay};
 
 pub fn resolution() {
-    unsafe {
-        let display_env = match env::var("DISPLAY") {
-            Ok(value) => {
-              println!("DISPLAY: {:?}", value);
-              value
-            },
-            Err(_) => {
-                println!("$DISPLAY must be set! Aborting...");
-                process::exit(1);
-            },
-        };
-        println!("DISPLAY: {}", display_env);
+    let display_env = match env::var("DISPLAY") {
+        Ok(value) => {
+            println!("DISPLAY: {:?}", value);
+            value
+        }
+        Err(_) => {
+            println!("$DISPLAY must be set! Aborting...");
+            process::exit(1);
+        }
+    };
+    println!("DISPLAY: {}", display_env);
+}
 
+pub fn display() {
+    unsafe {
         // open a display
         let display = XOpenDisplay(ptr::null());
 
@@ -34,5 +36,3 @@ pub fn resolution() {
         XCloseDisplay(display);
     }
 }
-
-
