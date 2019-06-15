@@ -22,6 +22,8 @@ vodka start -v
 
 Use `-vv` for `trace` logging.
 
+All logging outputs to stdout and `vodka.log` (for now).
+
 ## Testing
 
 Due to the tests actually using the X server, we need to make sure we limit the
