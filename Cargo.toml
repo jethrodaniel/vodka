@@ -9,17 +9,22 @@ license = 'MIT'
 
 [dependencies]
 
-# Logging
+# logging
 log = "0.4.6"
-simplelog = "0.5.3"
+simplelog = "0.6.0"
 
-# To use the X11 system
-#
-# https://github.com/erlepereira/x11-rs/issues/94
+# gtk graphics library
+gio = "0.7.0"
+gdk = "0.11.0"
+gtk = "0.7.0"
+pango = "0.7.0"
+cairo-rs = { version = "0.7.0", features = ["png"] }
+
+# x11 access
 x11 = { version = "2.18.1", features = ["xlib"] }
 
-# Command line argument parser for Rust
+# command line argument parser for Rust
 clap = "2.33.0"
 
-# For testing cli apps
+# test cli apps
 assert_cmd = "0.11"
