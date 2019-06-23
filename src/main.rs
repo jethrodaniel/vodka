@@ -92,7 +92,7 @@ fn build_ui(application: &gtk::Application) {
     let window = ApplicationWindow::new(application);
     set_visual(&window, &None);
 
-    // window.connect_screen_changed(&window);
+    // window.connect_screen_changed(set_visual);
     window.connect_draw(draw);
 
     window.set_title("vodka");
@@ -117,7 +117,8 @@ fn main() {
         build_ui(app);
     });
 
-    application.run(&args().collect::<Vec<_>>());
+    let args = Vec::new();
+    application.run(&args);
     println!("wow!");
 }
 
