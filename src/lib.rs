@@ -8,7 +8,7 @@ extern crate gtk;
 
 use gio::prelude::*;
 use gtk::prelude::*;
-use gtk::{ApplicationWindow, Button, Fixed};
+use gtk::{ApplicationWindow};
 
 pub struct App {
     application: gtk::Application,
@@ -64,6 +64,26 @@ impl App {
         window.set_title("vodka");
         window.set_app_paintable(true); // crucial for transparency
         window.show_all();
+
+        window.connect_key_press_event(|_, key| {
+            let keyval = key.get_keyval();
+            let keyname = match gdk::keyval_name(keyval) {
+              Some(s) => s,
+              None => panic!("whoah"),
+            };
+            let keystate = key.get_state();
+
+            info!("key pressed: {}:{} / {:?}", keyname, keyval, keystate);
+
+            if keystate.intersects(gdk::ModifierType::CONTROL_MASK) {
+                debug!("You pressed Ctrl!");
+            }
+            if keystate.intersects(gdk::ModifierType::SHIFT_MASK) {
+                debug!("You pressed shift!");
+            }
+
+            Inhibit(false)
+        });
     }
 
     fn set_visual(window: &ApplicationWindow, _screen: &Option<gdk::Screen>) {
@@ -110,6 +130,6 @@ mod tests {
 
     #[test]
     fn internal_thing_works() {
-      assert_eq!(true, true);
+        assert_eq!(true, true);
     }
 }
