@@ -2,18 +2,35 @@
 
 Does nothing for now.
 
-Linux only.
+## Contents
+
+- [Install](#install)
+- [Requirements](#requirements)
+- [Usage](#usage)
+- [Development](#development)
+  - [Testing](#testing)
 
 ## Install
 
+```
+cargo install vodka
+```
+
+## Requirements
+
 - [rust](https://github.com/rust-lang/rust)
-- gtk
-- cairo
+- [gtk](https://gtk-rs.org/)
+
+#### rust
+
+#### gtk
+
+https://gtk-rs.org/docs-src/requirements.html
 
 If you're using [brew](https://brew.sh)
 
 ```
-brew install cairo
+brew install gtk+3
 ```
 
 Or apt
@@ -44,20 +61,10 @@ Use `-vv` for `trace` logging.
 
 All logging outputs to stdout and `vodka.log` (for now).
 
-## Testing
+## Development
 
-<!-- Due to the tests actually using the X server, we need to make sure we limit the -->
-<!-- tests to a single thread, so we have to use -->
+### Testing
 
-<!-- ``` -->
-<!-- RUST_TEST_THREADS=1 cargo test -->
-<!-- ``` -->
-
-<!-- or -->
-
-<!-- ``` -->
-<!-- cargo test -- --test-threads 1 -->
-<!-- ``` -->
-
-<!-- or add it to your shell initalization (e.g. `~/.bashrc`), or whatever. -->
-
+```
+cargo test
+```

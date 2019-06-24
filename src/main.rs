@@ -1,3 +1,5 @@
+use std::fs::File;
+
 #[macro_use]
 extern crate clap;
 use clap::{App, AppSettings, Arg};
@@ -5,29 +7,12 @@ use clap::{App, AppSettings, Arg};
 #[macro_use]
 extern crate log;
 extern crate simplelog;
-use simplelog::*;
-use std::fs::File;
+use simplelog::{CombinedLogger, Config, LevelFilter, TermLogger, TerminalMode, WriteLogger};
 
-fn setup_basic_loggers() {
+fn setup_loggers(level: LevelFilter) {
     CombinedLogger::init(vec![
-        TermLogger::new(LevelFilter::Info, Config::default(), TerminalMode::Mixed).unwrap(),
-        WriteLogger::new(
-            LevelFilter::Info,
-            Config::default(),
-            File::create("vodka.log").unwrap(),
-        ),
-    ])
-    .unwrap();
-}
-
-fn setup_verbose_loggers() {
-    CombinedLogger::init(vec![
-        TermLogger::new(LevelFilter::Trace, Config::default(), TerminalMode::Mixed).unwrap(),
-        WriteLogger::new(
-            LevelFilter::Trace,
-            Config::default(),
-            File::create("vodka.log").unwrap(),
-        ),
+        TermLogger::new(level, Config::default(), TerminalMode::Mixed).unwrap(),
+        WriteLogger::new(level, Config::default(), File::create("vodka.log").unwrap()),
     ])
     .unwrap();
 }
@@ -54,8 +39,8 @@ fn main() {
 
     match matches.occurrences_of("verbose") {
         0 => (),
-        1 => setup_basic_loggers(),
-        _ => setup_verbose_loggers(),
+        1 => setup_loggers(LevelFilter::Info),
+        _ => setup_loggers(LevelFilter::Trace),
     }
 
     match vodka::run(matches) {
