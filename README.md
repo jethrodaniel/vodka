@@ -7,7 +7,6 @@ Linux only.
 ## Install
 
 - [rust](https://github.com/rust-lang/rust)
-- [autopilot-rs](https://github.com/autopilot-rs/autopilot-rs)
 - gtk
 - cairo
 
@@ -17,9 +16,7 @@ If you're using [brew](https://brew.sh)
 brew install cairo
 ```
 
-```
-sudo apt-get install libgtk-3-dev
-```
+Or apt
 
 ```
 sudo apt-get install libgtk-3-dev
@@ -47,7 +44,7 @@ Use `-vv` for `trace` logging.
 
 All logging outputs to stdout and `vodka.log` (for now).
 
-<!-- ## Testing -->
+## Testing
 
 <!-- Due to the tests actually using the X server, we need to make sure we limit the -->
 <!-- tests to a single thread, so we have to use -->
