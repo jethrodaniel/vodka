@@ -8,7 +8,9 @@ extern crate gtk;
 
 use gio::prelude::*;
 use gtk::prelude::*;
-use gtk::{ApplicationWindow};
+use gtk::ApplicationWindow;
+
+use gdk::{Display, Screen};
 
 pub struct App {
     application: gtk::Application,
@@ -60,26 +62,45 @@ impl App {
         let window = ApplicationWindow::new(application);
         App::set_visual(&window, &None);
 
+        let display = match Display::get_default() {
+            Some(d) => d,
+            _ => panic!("why?"),
+        };
+
+        let screen = Display::get_default_screen(&display);
+
+        info!(
+            "Width: {}\tHeight: {}",
+            screen.get_width(),
+            screen.get_height()
+        );
+
+        window.set_default_size(screen.get_width(), screen.get_height());
+
         window.connect_draw(App::draw);
         window.set_title("vodka");
         window.set_app_paintable(true); // crucial for transparency
         window.show_all();
 
-        window.connect_key_press_event(|_, key| {
+        window.connect_key_press_event(|window, key| {
             let keyval = key.get_keyval();
             let keyname = match gdk::keyval_name(keyval) {
-              Some(s) => s,
-              None => panic!("whoah"),
+                Some(s) => s,
+                None => panic!("whoah"),
             };
             let keystate = key.get_state();
 
-            info!("key pressed: {}:{} / {:?}", keyname, keyval, keystate);
+            info!("key pressed: {}:{} -> {:?}", keyname, keyval, keystate);
 
             if keystate.intersects(gdk::ModifierType::CONTROL_MASK) {
                 debug!("You pressed Ctrl!");
             }
             if keystate.intersects(gdk::ModifierType::SHIFT_MASK) {
                 debug!("You pressed shift!");
+            }
+
+            if keyname == "h" {
+               window.set_default_size(screen.get_width() / 2, screen.get_height());
             }
 
             Inhibit(false)
